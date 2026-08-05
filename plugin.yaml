@@ -1,0 +1,8 @@
+name: sol-advisor
+version: 1.0.0
+description: Inject Sol Advisor policy and gate native delegate_task routing.
+provides_hooks:
+  - pre_llm_call
+  - pre_tool_call
+provides_skills:
+  - sol-advisor

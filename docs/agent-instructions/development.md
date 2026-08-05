@@ -2,24 +2,39 @@
 
 ## Layout
 
-- `skills/software-development/sol-advisor/SKILL.md`: shipped Hermes skill.
-- `scripts/verify.sh`: the only repository helper; it uses POSIX shell tools.
+- `plugin.yaml`: directly installable Hermes plugin manifest.
+- `__init__.py`: plugin entry point, global hooks, and bundled skill registration.
+- `skills/software-development/sol-advisor/SKILL.md`: reused Hermes skill.
+- `tests/test_plugin.py`: focused stdlib tests for registration, injection, and route gating.
+- `.hermes.md`: repository-wide Hermes bootstrap that loads `AGENTS.md` and the qualified skill.
+- `scripts/verify.sh`: the repository structure, plugin, and stale-artifact verifier.
 - `README.md`: installation and user-facing configuration.
 - `docs/agent-instructions/`: progressive-disclosure project guidance.
 
 ## Toolchain
 
-There is no application runtime, package manifest, dependency install, build,
-or compiled artifact. Use a POSIX shell. The focused verifier intentionally
-uses `sh`, `find`, `grep`, `awk`, and standard file utilities, so it runs on a
-Windows Git Bash host without requiring `python3`.
+There is no application runtime, package manifest, dependency install, build, or
+compiled artifact. The plugin uses only Python stdlib code plus Hermes runtime
+APIs. Use a POSIX shell for repository checks; the focused tests use `unittest`
+and `scripts/verify.sh` uses `python` with a `python3` fallback.
 
 ## Installation
 
-Install the skill from the repository's raw `SKILL.md` URL with
-`hermes skills install`, then set the three `delegation.*` keys with
-`hermes config set` as shown in [the README](../../README.md).
+Install and enable the plugin with:
 
-Do not add a plugin manifest, custom agent configuration, nested agent process,
-or a second routing system. Keep the repository to the skill, its verifier, and
-its project documentation.
+```sh
+hermes plugins install rmfraess/sol-advisor --enable
+hermes config set delegation.model gpt-5.6-luna
+hermes config set delegation.provider openai-codex
+hermes config set delegation.reasoning_effort max
+```
+
+Restart running Hermes processes after installation because plugins load at
+startup. The plugin registers the reused skill as
+`sol-advisor:sol-advisor`; do not manually edit a Hermes profile or install a
+second flat skill copy.
+
+Do not add a custom delegation tool, custom agent configuration, nested agent
+process, telemetry, write-tool blocker, user-message classifier, dependency, or
+second routing system. Keep the plugin on native Hermes hooks and
+`delegate_task`.
